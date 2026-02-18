@@ -1,0 +1,70 @@
+---
+import SectionHeading from "./SectionHeading.astro";
+
+const testimonials = [
+  {
+    quote:
+      "Takumi brought a cinematic quality to our brand film that exceeded every expectation. His eye for detail and calm professionalism on set made the entire process seamless.",
+    name: "Yuki Tanaka",
+    role: "Creative Director, Aurora Cosmetics",
+  },
+  {
+    quote:
+      "Working with Takumi felt like a true collaboration. He understood our vision instantly and elevated it beyond what we imagined.",
+    name: "Rei Nakamura",
+    role: "Recording Artist",
+  },
+  {
+    quote:
+      "The final product was stunning. From the initial concept call to final delivery, Takumi's process is professional, efficient, and deeply creative.",
+    name: "Aiko Suzuki",
+    role: "Producer, Seiko Watches",
+  },
+];
+---
+
+<section class="section-padding">
+  <div class="container-narrow">
+    <div class="text-center" data-animate>
+      <SectionHeading
+        label="Testimonials"
+        title="Kind Words"
+        align="center"
+      />
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6 mt-4">
+      {
+        testimonials.map((item, i) => (
+          <blockquote
+            class="p-6 md:p-8 bg-bg-card border border-border rounded-sm"
+            data-animate
+            style={`transition-delay: ${i * 0.15}s`}
+          >
+            <!-- Quote mark -->
+            <svg
+              class="w-8 h-8 text-accent/30 mb-4"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10H14.017zM0 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151C7.546 6.068 5.983 8.789 5.983 11H10v10H0z" />
+            </svg>
+
+            <p class="text-sm text-text-secondary leading-relaxed italic">
+              "{item.quote}"
+            </p>
+
+            <footer class="mt-6 pt-4 border-t border-border">
+              <cite class="not-italic">
+                <span class="text-sm font-medium text-text-primary block">
+                  {item.name}
+                </span>
+                <span class="text-xs text-text-muted">{item.role}</span>
+              </cite>
+            </footer>
+          </blockquote>
+        ))
+      }
+    </div>
+  </div>
+</section>

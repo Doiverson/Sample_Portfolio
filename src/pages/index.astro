@@ -1,0 +1,111 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Hero from "../components/Hero.astro";
+import SectionHeading from "../components/SectionHeading.astro";
+import WorkCard from "../components/WorkCard.astro";
+import Services from "../components/Services.astro";
+import Process from "../components/Process.astro";
+import About from "../components/About.astro";
+import Testimonials from "../components/Testimonials.astro";
+import Contact from "../components/Contact.astro";
+
+const allWorks = await getCollection("works");
+const featuredWorks = allWorks
+  .filter((w) => w.data.featured)
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 6);
+---
+
+<BaseLayout>
+  <!-- Hero -->
+  <Hero />
+
+  <!-- Featured Works -->
+  <section id="works" class="section-padding">
+    <div class="container-narrow">
+      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12 md:mb-16" data-animate>
+        <SectionHeading
+          label="Selected Works"
+          title="Featured Projects"
+        />
+        <a
+          href="/works"
+          class="text-sm font-medium text-accent hover:text-accent-hover transition-colors inline-flex items-center gap-1 shrink-0"
+        >
+          View All
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </a>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
+        {
+          featuredWorks.map((work) => (
+            <WorkCard
+              title={work.data.title}
+              category={work.data.category}
+              year={work.data.year}
+              thumbnail={work.data.thumbnail}
+              previewVideo={work.data.previewVideo}
+              slug={work.id}
+              role={work.data.role}
+            />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <Services />
+
+  <!-- Process -->
+  <Process />
+
+  <!-- Testimonials -->
+  <Testimonials />
+
+  <!-- About -->
+  <About />
+
+  <!-- Contact -->
+  <Contact />
+
+  <!-- Work preview hover script -->
+  <script>
+    // Manage video preview on hover — only one at a time
+    let currentlyPlaying: HTMLVideoElement | null = null;
+    const isTouchDevice = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+
+    if (!isTouchDevice) {
+      document.querySelectorAll(".work-card").forEach((card) => {
+        const video = card.querySelector(".work-preview-video") as HTMLVideoElement | null;
+        if (!video) return;
+
+        card.addEventListener("mouseenter", () => {
+          if (currentlyPlaying && currentlyPlaying !== video) {
+            currentlyPlaying.pause();
+            currentlyPlaying.currentTime = 0;
+            currentlyPlaying.classList.remove("opacity-100");
+            currentlyPlaying.classList.add("opacity-0");
+          }
+
+          video.play().catch(() => {});
+          video.classList.remove("opacity-0");
+          video.classList.add("opacity-100");
+          currentlyPlaying = video;
+        });
+
+        card.addEventListener("mouseleave", () => {
+          video.pause();
+          video.currentTime = 0;
+          video.classList.remove("opacity-100");
+          video.classList.add("opacity-0");
+          if (currentlyPlaying === video) currentlyPlaying = null;
+        });
+      });
+    }
+  </script>
+</BaseLayout>

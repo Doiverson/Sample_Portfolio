@@ -1,0 +1,75 @@
+---
+import SectionHeading from "./SectionHeading.astro";
+
+const steps = [
+  {
+    number: "01",
+    title: "Discovery",
+    description:
+      "We discuss your vision, goals, audience, and timeline. I'll ask the questions that shape a great final product.",
+  },
+  {
+    number: "02",
+    title: "Pre-Production",
+    description:
+      "Concept development, shot lists, location scouting, and scheduling. Every detail planned before we roll.",
+  },
+  {
+    number: "03",
+    title: "Production",
+    description:
+      "Shoot day(s). Professional crew, premium equipment, and a calm, focused set. Your story comes to life.",
+  },
+  {
+    number: "04",
+    title: "Post-Production",
+    description:
+      "Editing, color grading, sound design, and graphics. Two rounds of revisions to get it exactly right.",
+  },
+  {
+    number: "05",
+    title: "Delivery",
+    description:
+      "Final files in all required formats, optimized for every platform. Ready to publish and share with the world.",
+  },
+];
+---
+
+<section class="section-padding">
+  <div class="container-narrow">
+    <div data-animate>
+      <SectionHeading
+        label="Process"
+        title="How I Work"
+        description="A streamlined production workflow designed to deliver exceptional results on time and on budget."
+      />
+    </div>
+
+    <div class="relative">
+      <!-- Vertical line -->
+      <div class="absolute left-[19px] top-0 bottom-0 w-px bg-border hidden md:block"></div>
+
+      <div class="space-y-8 md:space-y-12">
+        {
+          steps.map((step, i) => (
+            <div
+              class="flex gap-6 md:gap-10 items-start"
+              data-animate
+              style={`transition-delay: ${i * 0.1}s`}
+            >
+              <div class="relative z-10 flex-shrink-0 w-10 h-10 rounded-full bg-bg-secondary border border-border flex items-center justify-center">
+                <span class="text-xs font-bold text-accent">{step.number}</span>
+              </div>
+              <div class="pb-8">
+                <h3 class="text-lg font-semibold mb-2">{step.title}</h3>
+                <p class="text-sm text-text-secondary leading-relaxed max-w-lg">
+                  {step.description}
+                </p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>

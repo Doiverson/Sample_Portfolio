@@ -1,0 +1,143 @@
+---
+const navItems = [
+  { label: "Works", href: "/#works" },
+  { label: "Services", href: "/#services" },
+  { label: "About", href: "/#about" },
+  { label: "Contact", href: "/#contact" },
+];
+---
+
+<header
+  id="site-header"
+  class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+>
+  <div class="container-narrow">
+    <nav class="flex items-center justify-between h-20" aria-label="Main navigation">
+      <!-- Logo -->
+      <a
+        href="/"
+        class="text-lg font-semibold tracking-tight text-text-primary hover:text-accent transition-colors"
+      >
+        EIICHI<span class="text-accent">.</span>
+      </a>
+
+      <!-- Desktop Nav -->
+      <ul class="hidden md:flex items-center gap-8">
+        {
+          navItems.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-px after:bg-accent after:transition-all after:duration-300 hover:after:w-full"
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+        <li>
+          <a
+            href="/#contact"
+            class="text-sm font-medium px-5 py-2 border border-accent text-accent hover:bg-accent hover:text-bg-primary transition-all duration-300 rounded-sm"
+          >
+            Get in Touch
+          </a>
+        </li>
+      </ul>
+
+      <!-- Mobile Menu Button -->
+      <button
+        id="mobile-menu-btn"
+        class="md:hidden flex flex-col gap-1.5 p-2 -mr-2"
+        aria-label="Toggle menu"
+        aria-expanded="false"
+      >
+        <span class="block w-6 h-px bg-text-primary transition-all duration-300 origin-center" id="bar1"></span>
+        <span class="block w-6 h-px bg-text-primary transition-all duration-300" id="bar2"></span>
+        <span class="block w-4 h-px bg-text-primary transition-all duration-300 origin-center" id="bar3"></span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Mobile Menu Overlay -->
+  <div
+    id="mobile-menu"
+    class="fixed inset-0 top-20 bg-bg-primary/98 backdrop-blur-md z-40 flex flex-col items-center justify-center gap-8 opacity-0 pointer-events-none transition-opacity duration-300 md:hidden"
+  >
+    {
+      navItems.map((item) => (
+        <a
+          href={item.href}
+          class="mobile-nav-link text-2xl font-light text-text-secondary hover:text-text-primary transition-colors"
+        >
+          {item.label}
+        </a>
+      ))
+    }
+    <a
+      href="/#contact"
+      class="mobile-nav-link text-lg font-medium px-8 py-3 border border-accent text-accent hover:bg-accent hover:text-bg-primary transition-all duration-300 rounded-sm mt-4"
+    >
+      Get in Touch
+    </a>
+  </div>
+</header>
+
+<script>
+  const header = document.getElementById("site-header")!;
+  const menuBtn = document.getElementById("mobile-menu-btn")!;
+  const mobileMenu = document.getElementById("mobile-menu")!;
+  const bar1 = document.getElementById("bar1")!;
+  const bar2 = document.getElementById("bar2")!;
+  const bar3 = document.getElementById("bar3")!;
+  let isOpen = false;
+
+  // Scroll behavior
+  let lastScroll = 0;
+  window.addEventListener("scroll", () => {
+    const currentScroll = window.scrollY;
+
+    if (currentScroll > 80) {
+      header.classList.add("bg-bg-primary/90", "backdrop-blur-md", "border-b", "border-border");
+    } else {
+      header.classList.remove("bg-bg-primary/90", "backdrop-blur-md", "border-b", "border-border");
+    }
+
+    lastScroll = currentScroll;
+  });
+
+  // Mobile menu toggle
+  menuBtn.addEventListener("click", () => {
+    isOpen = !isOpen;
+    menuBtn.setAttribute("aria-expanded", String(isOpen));
+
+    if (isOpen) {
+      mobileMenu.classList.remove("opacity-0", "pointer-events-none");
+      mobileMenu.classList.add("opacity-100", "pointer-events-auto");
+      bar1.style.transform = "rotate(45deg) translate(2px, 4px)";
+      bar2.style.opacity = "0";
+      bar3.style.transform = "rotate(-45deg) translate(3px, -5px)";
+      bar3.style.width = "1.5rem";
+      document.body.style.overflow = "hidden";
+    } else {
+      closeMenu();
+    }
+  });
+
+  function closeMenu() {
+    isOpen = false;
+    menuBtn.setAttribute("aria-expanded", "false");
+    mobileMenu.classList.add("opacity-0", "pointer-events-none");
+    mobileMenu.classList.remove("opacity-100", "pointer-events-auto");
+    bar1.style.transform = "";
+    bar2.style.opacity = "";
+    bar3.style.transform = "";
+    bar3.style.width = "";
+    document.body.style.overflow = "";
+  }
+
+  // Close on nav link click
+  document.querySelectorAll(".mobile-nav-link").forEach((link) => {
+    link.addEventListener("click", closeMenu);
+  });
+</script>

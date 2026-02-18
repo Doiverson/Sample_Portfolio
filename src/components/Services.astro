@@ -1,0 +1,98 @@
+---
+import SectionHeading from "./SectionHeading.astro";
+
+const services = [
+  {
+    icon: "camera",
+    title: "Cinematography",
+    description:
+      "From Sony to ARRI, I bring technical expertise and creative vision to every shoot. Available for both studio and location work.",
+  },
+  {
+    icon: "edit",
+    title: "Editing & Post",
+    description:
+      "Narrative-driven editing that finds the story within the footage. Premiere Pro and DaVinci Resolve workflows.",
+  },
+  {
+    icon: "color",
+    title: "Color Grading",
+    description:
+      "Professional color science to set the mood and unify your visual language. DaVinci Resolve certified.",
+  },
+  {
+    icon: "drone",
+    title: "Aerial / Drone",
+    description:
+      "Licensed drone operator for breathtaking aerial perspectives. FAA Part 107 certified.",
+  },
+  {
+    icon: "direction",
+    title: "Creative Direction",
+    description:
+      "End-to-end creative vision from concept development through final delivery. Your story, elevated.",
+  },
+  {
+    icon: "sound",
+    title: "Sound Design",
+    description:
+      "Atmospheric soundscapes and precise audio mixing to complement the visual narrative.",
+  },
+];
+
+const iconPaths: Record<string, string> = {
+  camera:
+    "M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z M12 17a5 5 0 100-10 5 5 0 000 10z",
+  edit: "M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7 M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z",
+  color: "M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 011.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z",
+  drone: "M12 12m-3 0a3 3 0 106 0 3 3 0 10-6 0 M3 7l3 3 M21 7l-3 3 M3 17l3-3 M21 17l-3-3",
+  direction:
+    "M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z",
+  sound:
+    "M9 18V5l12-2v13 M9 18a3 3 0 11-6 0 3 3 0 016 0z M21 16a3 3 0 11-6 0 3 3 0 016 0z",
+};
+---
+
+<section id="services" class="section-padding bg-bg-secondary relative">
+  <div class="container-narrow">
+    <div data-animate>
+      <SectionHeading
+        label="Services"
+        title="What I Do"
+        description="Full-service video production, from concept to final delivery. Every project receives the same level of craft and attention."
+      />
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {
+        services.map((service, i) => (
+          <div
+            class="group p-6 md:p-8 bg-bg-card border border-border rounded-sm hover:border-border-hover transition-all duration-300"
+            data-animate
+            style={`transition-delay: ${i * 0.1}s`}
+          >
+            <div class="w-10 h-10 flex items-center justify-center rounded-sm bg-accent-muted text-accent mb-5">
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d={iconPaths[service.icon]}
+                />
+              </svg>
+            </div>
+            <h3 class="text-base font-semibold mb-2">{service.title}</h3>
+            <p class="text-sm text-text-secondary leading-relaxed">
+              {service.description}
+            </p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

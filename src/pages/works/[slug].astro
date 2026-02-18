@@ -1,0 +1,224 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export async function getStaticPaths() {
+  const works = await getCollection("works");
+  return works.map((work) => ({
+    params: { slug: work.id },
+    props: { work },
+  }));
+}
+
+const { work } = Astro.props;
+const { Content } = await render(work);
+
+const allWorks = await getCollection("works");
+const sortedWorks = allWorks.sort((a, b) => a.data.order - b.data.order);
+const currentIndex = sortedWorks.findIndex((w) => w.id === work.id);
+const prevWork = currentIndex > 0 ? sortedWorks[currentIndex - 1] : null;
+const nextWork = currentIndex < sortedWorks.length - 1 ? sortedWorks[currentIndex + 1] : null;
+
+const categoryLabels: Record<string, string> = {
+  commercial: "Commercial",
+  "music-video": "Music Video",
+  documentary: "Documentary",
+  wedding: "Wedding",
+  brand: "Brand Film",
+  "short-film": "Short Film",
+};
+---
+
+<BaseLayout
+  title={`${work.data.title} | Eiichi Takeuchi`}
+  description={work.data.description}
+>
+  <!-- Hero -->
+  <section class="pt-28 md:pt-36 pb-12 md:pb-16">
+    <div class="container-narrow">
+      <!-- Back link -->
+      <a
+        href="/works"
+        class="inline-flex items-center gap-2 text-sm text-text-secondary hover:text-text-primary transition-colors mb-8"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Back to Works
+      </a>
+
+      <!-- Meta -->
+      <div class="flex flex-wrap items-center gap-3 mb-4">
+        <span class="text-xs font-semibold uppercase tracking-widest text-accent">
+          {categoryLabels[work.data.category] || work.data.category}
+        </span>
+        <span class="text-text-muted">&middot;</span>
+        <span class="text-sm text-text-secondary">{work.data.year}</span>
+      </div>
+
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1]">
+        {work.data.title}
+      </h1>
+
+      <p class="mt-4 text-lg text-text-secondary max-w-2xl leading-relaxed">
+        {work.data.description}
+      </p>
+
+      <!-- Info row -->
+      <div class="flex flex-wrap gap-8 mt-8 pt-8 border-t border-border">
+        <div>
+          <span class="text-xs text-text-muted uppercase tracking-wider block mb-1">Role</span>
+          <span class="text-sm font-medium">{work.data.role}</span>
+        </div>
+        <div>
+          <span class="text-xs text-text-muted uppercase tracking-wider block mb-1">Client</span>
+          <span class="text-sm font-medium">{work.data.client}</span>
+        </div>
+        <div>
+          <span class="text-xs text-text-muted uppercase tracking-wider block mb-1">Year</span>
+          <span class="text-sm font-medium">{work.data.year}</span>
+        </div>
+        {work.data.tags.length > 0 && (
+          <div>
+            <span class="text-xs text-text-muted uppercase tracking-wider block mb-1">Tags</span>
+            <div class="flex flex-wrap gap-2">
+              {work.data.tags.map((tag: string) => (
+                <span class="text-xs px-2 py-0.5 bg-bg-tertiary border border-border rounded-sm text-text-secondary">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- Video Embed -->
+  <section class="pb-12 md:pb-16">
+    <div class="container-narrow">
+      <div class="aspect-video bg-bg-secondary rounded-sm overflow-hidden relative">
+        {work.data.fullVideoUrl ? (
+          <div class="w-full h-full flex items-center justify-center">
+            <a
+              href={work.data.fullVideoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="group flex flex-col items-center gap-4"
+            >
+              <div class="w-20 h-20 rounded-full bg-accent/10 flex items-center justify-center border border-accent/30 group-hover:bg-accent/20 transition-all">
+                <svg class="w-8 h-8 text-accent ml-1" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </div>
+              <span class="text-sm text-text-secondary group-hover:text-text-primary transition-colors">
+                Watch on Vimeo
+              </span>
+            </a>
+          </div>
+        ) : (
+          <div class="w-full h-full flex items-center justify-center text-text-muted text-sm">
+            Video coming soon
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- Content -->
+  <section class="pb-12 md:pb-16">
+    <div class="container-narrow">
+      <div class="max-w-3xl prose-content">
+        <Content />
+      </div>
+    </div>
+  </section>
+
+  <!-- Credits -->
+  {work.data.credits && work.data.credits.length > 0 && (
+    <section class="pb-12 md:pb-16">
+      <div class="container-narrow">
+        <div class="max-w-3xl">
+          <h2 class="text-lg font-semibold mb-6">Credits</h2>
+          <div class="grid sm:grid-cols-2 gap-4">
+            {work.data.credits.map((credit: { role: string; name: string }) => (
+              <div class="flex items-center gap-4 py-3 border-b border-border">
+                <span class="text-xs text-text-muted uppercase tracking-wider min-w-[100px]">
+                  {credit.role}
+                </span>
+                <span class="text-sm font-medium">{credit.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Prev / Next -->
+  <section class="section-padding border-t border-border">
+    <div class="container-narrow">
+      <div class="grid sm:grid-cols-2 gap-6">
+        {prevWork ? (
+          <a
+            href={`/works/${prevWork.id}`}
+            class="group p-6 bg-bg-card border border-border rounded-sm hover:border-border-hover transition-all"
+          >
+            <span class="text-xs text-text-muted uppercase tracking-wider">Previous</span>
+            <h3 class="text-lg font-semibold mt-2 group-hover:text-accent transition-colors">
+              {prevWork.data.title}
+            </h3>
+          </a>
+        ) : <div />}
+
+        {nextWork ? (
+          <a
+            href={`/works/${nextWork.id}`}
+            class="group p-6 bg-bg-card border border-border rounded-sm hover:border-border-hover transition-all text-right"
+          >
+            <span class="text-xs text-text-muted uppercase tracking-wider">Next</span>
+            <h3 class="text-lg font-semibold mt-2 group-hover:text-accent transition-colors">
+              {nextWork.data.title}
+            </h3>
+          </a>
+        ) : <div />}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .prose-content :global(h2) {
+    font-size: 1.375rem;
+    font-weight: 600;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--color-text-primary);
+  }
+
+  .prose-content :global(h3) {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    color: var(--color-text-primary);
+  }
+
+  .prose-content :global(p) {
+    color: var(--color-text-secondary);
+    line-height: 1.8;
+    margin-bottom: 1.25rem;
+  }
+
+  .prose-content :global(ul) {
+    list-style: disc;
+    padding-left: 1.5rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 1.25rem;
+  }
+
+  .prose-content :global(li) {
+    margin-bottom: 0.5rem;
+    line-height: 1.7;
+  }
+</style>

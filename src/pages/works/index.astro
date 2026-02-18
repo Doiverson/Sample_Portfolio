@@ -1,0 +1,153 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SectionHeading from "../../components/SectionHeading.astro";
+import WorkCard from "../../components/WorkCard.astro";
+
+const allWorks = await getCollection("works");
+const sortedWorks = allWorks.sort((a, b) => {
+  if (b.data.year !== a.data.year) return b.data.year - a.data.year;
+  return a.data.order - b.data.order;
+});
+
+const categories = [
+  { value: "all", label: "All" },
+  { value: "commercial", label: "Commercial" },
+  { value: "music-video", label: "Music Video" },
+  { value: "documentary", label: "Documentary" },
+  { value: "wedding", label: "Wedding" },
+  { value: "brand", label: "Brand Film" },
+  { value: "short-film", label: "Short Film" },
+];
+---
+
+<BaseLayout title="Works | Eiichi Takeuchi" description="A curated selection of film and video projects by Eiichi Takeuchi.">
+  <!-- Page Header -->
+  <section class="pt-32 pb-12 md:pt-40 md:pb-16">
+    <div class="container-narrow">
+      <div data-animate>
+        <SectionHeading
+          label="Portfolio"
+          title="All Works"
+          description="A curated collection of projects spanning commercials, music videos, documentaries, and more."
+        />
+      </div>
+
+      <!-- Filter Tabs -->
+      <div class="flex flex-wrap gap-2 mt-8" data-animate>
+        {
+          categories.map((cat) => (
+            <button
+              data-filter={cat.value}
+              class:list={[
+                "filter-btn text-xs font-medium px-4 py-2 rounded-sm border transition-all duration-300",
+                cat.value === "all"
+                  ? "border-accent text-accent bg-accent-muted"
+                  : "border-border text-text-secondary hover:border-border-hover hover:text-text-primary",
+              ]}
+            >
+              {cat.label}
+            </button>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Works Grid -->
+  <section class="pb-20 md:pb-28">
+    <div class="container-narrow">
+      <div id="works-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
+        {
+          sortedWorks.map((work) => (
+            <div data-category={work.data.category} class="work-item">
+              <WorkCard
+                title={work.data.title}
+                category={work.data.category}
+                year={work.data.year}
+                thumbnail={work.data.thumbnail}
+                previewVideo={work.data.previewVideo}
+                slug={work.id}
+                role={work.data.role}
+              />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Category filter
+    const filterBtns = document.querySelectorAll(".filter-btn");
+    const workItems = document.querySelectorAll(".work-item");
+
+    filterBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const filter = (btn as HTMLElement).dataset.filter;
+
+        filterBtns.forEach((b) => {
+          b.classList.remove("border-accent", "text-accent", "bg-accent-muted");
+          b.classList.add("border-border", "text-text-secondary");
+        });
+        btn.classList.add("border-accent", "text-accent", "bg-accent-muted");
+        btn.classList.remove("border-border", "text-text-secondary");
+
+        workItems.forEach((item) => {
+          const category = (item as HTMLElement).dataset.category;
+          if (filter === "all" || category === filter) {
+            (item as HTMLElement).style.display = "";
+            requestAnimationFrame(() => {
+              (item as HTMLElement).style.opacity = "1";
+              (item as HTMLElement).style.transform = "translateY(0)";
+            });
+          } else {
+            (item as HTMLElement).style.opacity = "0";
+            (item as HTMLElement).style.transform = "translateY(10px)";
+            setTimeout(() => {
+              (item as HTMLElement).style.display = "none";
+            }, 300);
+          }
+        });
+      });
+    });
+
+    // Work card video preview
+    let currentlyPlaying: HTMLVideoElement | null = null;
+    const isTouchDevice = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+
+    if (!isTouchDevice) {
+      document.querySelectorAll(".work-card").forEach((card) => {
+        const video = card.querySelector(".work-preview-video") as HTMLVideoElement | null;
+        if (!video) return;
+
+        card.addEventListener("mouseenter", () => {
+          if (currentlyPlaying && currentlyPlaying !== video) {
+            currentlyPlaying.pause();
+            currentlyPlaying.currentTime = 0;
+            currentlyPlaying.classList.remove("opacity-100");
+            currentlyPlaying.classList.add("opacity-0");
+          }
+          video.play().catch(() => {});
+          video.classList.remove("opacity-0");
+          video.classList.add("opacity-100");
+          currentlyPlaying = video;
+        });
+
+        card.addEventListener("mouseleave", () => {
+          video.pause();
+          video.currentTime = 0;
+          video.classList.remove("opacity-100");
+          video.classList.add("opacity-0");
+          if (currentlyPlaying === video) currentlyPlaying = null;
+        });
+      });
+    }
+  </script>
+
+  <style>
+    .work-item {
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+  </style>
+</BaseLayout>

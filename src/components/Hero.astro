@@ -1,0 +1,118 @@
+---
+interface Props {
+  videoSrc?: string;
+  posterSrc?: string;
+  headline?: string;
+  subheadline?: string;
+}
+
+const {
+  videoSrc = "/videos/hero-reel.mp4",
+  posterSrc = "/images/hero-poster.jpg",
+  headline = "Cinematic Vision,\nCrafted Stories",
+  subheadline = "Director & Cinematographer based in Tokyo. Turning ideas into moving images.",
+} = Astro.props;
+---
+
+<section class="relative h-dvh min-h-[600px] flex items-center overflow-hidden">
+  <!-- Background Video -->
+  <div class="absolute inset-0 z-0">
+    <video
+      id="hero-video"
+      class="absolute inset-0 w-full h-full object-cover"
+      autoplay
+      muted
+      loop
+      playsinline
+      poster={posterSrc}
+      preload="auto"
+    >
+      <source src={videoSrc} type="video/mp4" />
+    </video>
+
+    <!-- Poster fallback for reduced motion / slow connections -->
+    <div
+      class="video-poster-fallback absolute inset-0 bg-cover bg-center hidden"
+      style={`background-image: url(${posterSrc})`}
+    >
+    </div>
+
+    <!-- Gradient overlay -->
+    <div class="absolute inset-0 bg-gradient-to-b from-bg-primary/70 via-bg-primary/40 to-bg-primary/90"></div>
+
+    <!-- Noise texture -->
+    <div class="noise-overlay absolute inset-0"></div>
+  </div>
+
+  <!-- Content -->
+  <div class="container-narrow relative z-10">
+    <div class="max-w-3xl">
+      <h1
+        class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight animate-fade-in whitespace-pre-line"
+      >
+        {headline.split('\n').map((line, i) => (
+          <span class:list={[i > 0 && "block mt-2"]}>
+            {i === 1 ? (
+              <span class="text-accent">{line}</span>
+            ) : (
+              line
+            )}
+          </span>
+        ))}
+      </h1>
+
+      <p class="mt-6 md:mt-8 text-lg md:text-xl text-text-secondary max-w-xl leading-relaxed animate-fade-in delay-200">
+        {subheadline}
+      </p>
+
+      <div class="mt-8 md:mt-10 flex flex-wrap gap-4 animate-fade-in delay-400">
+        <a
+          href="#works"
+          class="inline-flex items-center gap-2 px-8 py-3.5 bg-accent text-bg-primary font-medium text-sm hover:bg-accent-hover transition-colors rounded-sm"
+        >
+          View Works
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </a>
+        <a
+          href="#contact"
+          class="inline-flex items-center gap-2 px-8 py-3.5 border border-text-primary/30 text-text-primary font-medium text-sm hover:border-text-primary/60 transition-colors rounded-sm"
+        >
+          Get in Touch
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll indicator -->
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 animate-fade-in delay-600">
+    <div class="flex flex-col items-center gap-2">
+      <span class="text-xs text-text-muted uppercase tracking-widest">Scroll</span>
+      <div class="w-px h-8 bg-gradient-to-b from-text-muted to-transparent animate-pulse"></div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Pause hero video on slow connections or reduced motion
+  const heroVideo = document.getElementById("hero-video") as HTMLVideoElement | null;
+
+  if (heroVideo) {
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (prefersReducedMotion) {
+      heroVideo.pause();
+      heroVideo.style.display = "none";
+      const fallback = heroVideo.parentElement?.querySelector(".video-poster-fallback") as HTMLElement;
+      if (fallback) fallback.style.display = "block";
+    }
+
+    // Check connection speed
+    const connection = (navigator as any).connection;
+    if (connection && (connection.saveData || connection.effectiveType === "2g" || connection.effectiveType === "slow-2g")) {
+      heroVideo.pause();
+      heroVideo.removeAttribute("autoplay");
+    }
+  }
+</script>
